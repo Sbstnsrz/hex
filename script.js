@@ -10,9 +10,9 @@ function randomHexLine(x, y, count, size, color, type){
     var arrayY = [0, -0.866, -0.866, 0, 0.866, 0.866];
     var direction = Math.floor(Math.random()*3);
     if(type){
-        direction = direction*2;
-    }else{
         direction = direction*2+1;
+    }else{
+        direction = direction*2;
     }
     hex.strokeStyle = color;
     hex.beginPath();
@@ -52,15 +52,29 @@ scr.addEventListener("mousemove", (e)=>{
     hex.fillRect(0,0,1000,800);
 
     for(var i=0; i<colors.length; i++){
+        var pos = syncHex(x, y, size);
         var size = 30;
-        randomHexLine(x-x%(size*0.5*1.5), y-y%(size*0.866*2), 10, size, colors[i], hexType(x, y, size));
+        randomHexLine(pos[0], pos[1], 10, size, colors[i], pos[2]);
     }
 });
 
-function hexType(x, y, size){
-    if(Math.floor((x%(size*0.5*1.5))/size) === Math.floor((y%(size*0.866*2))/size)){
-        return true;
+function syncHex(x, y, size){
+    var pointY = Math.floor(y/(0.866*size));
+    var pointX = Math.floor(x/(0.5*size));
+     
+    if(pointY%2){
+        var diffX = (pointX-1)%6;
+        if(diffX<2){
+            return [(pointX-diffX)*size*0.5, pointY*size*0.866, 0];
+        }else{
+            return [(pointX-diffX+2)*size*0.5, pointY*size*0.866, 1];
+        }
     }else{
-        return false;
+        var diffX = pointX%6;
+        if(diffX<4){
+            return [(pointX-diffX)*size*0.5, pointY*size*0.866, 1];
+        }else{
+            return [(pointX-diffX+4)*size*0.5, pointY*size*0.866, 0];
+        } 
     }
 }
